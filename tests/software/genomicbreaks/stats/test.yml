@@ -1,0 +1,10 @@
+## TODO nf-core: Please run the following command to build this file:
+#                nf-core modules create-test-yml genomicbreaks/stats
+- name: genomicbreaks stats
+  command: nextflow run ./tests/software/genomicbreaks/stats -entry test_genomicbreaks_stats -c tests/config/nextflow.config
+  tags:
+    - genomicbreaks
+    - genomicbreaks/stats
+  files:
+    - path: output/genomicbreaks/test.bam
+      md5sum: e667c7caad0bc4b7ac383fd023c654fc
