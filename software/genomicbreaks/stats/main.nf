@@ -20,7 +20,7 @@ process GENOMICBREAKS_STATS {
     }
 
     input:
-    tuple val(meta), path(axt)
+    tuple val(meta), path(axt), path(gff)
     path(skel)
 
     output:
@@ -36,7 +36,7 @@ process GENOMICBREAKS_STATS {
     R -e 'rmarkdown::render(
         "not-a-symbolic-link.Rmd",
         output_file = "./${prefix}.html",
-        params = list(axtFile = "${axt}", prefix = "${prefix}"))'
+        params = list(axtFile = "${axt}", gffFile = "${gff}", prefix = "${prefix}"))'
 
     echo '0.0.0' > ${software}.version.txt
     """
