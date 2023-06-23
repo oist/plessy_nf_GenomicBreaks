@@ -17,7 +17,7 @@ to construct an input file.  Then, run the pipeline.  If needed, do not forget
 to give a path to a work directory writable by the compute node (at OIST, it
 is on the `/flash` file system) using the `-w` option.
 
-    nextflow run oist/plessy_nf_GenomicBreaks -profile oist --input input.tsv
+    nextflow run oist/plessy_nf_GenomicBreaks -r main -profile oist --input input.tsv
  
 ## Test
 
@@ -25,7 +25,7 @@ To test the pipeline, just run it with the input file from GitHub.  This will
 download a small alignment file between a SARS-CoV-2 genome and a SARS-CoV-2
 contig assembly.
 
-    nextflow run oist/plessy_nf_GenomicBreaks -profile oist --input https://github.com/oist/plessy_nf_GenomicBreaks/raw/main/input.tsv
+    nextflow run oist/plessy_nf_GenomicBreaks -r main -profile oist --input https://github.com/oist/plessy_nf_GenomicBreaks/raw/main/input.tsv
 
 ## Tip
 
