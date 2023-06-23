@@ -51,6 +51,7 @@ Coalesce contigs
 
 ```{r coalesce_contigs}
 coa <- coalesce_contigs(gb)
+makeOxfordPlots(coa, col = 'strand') + ggtitle(params$alnFile)
 ```
 
 ### Extract information
@@ -61,8 +62,8 @@ regions_, _colinear alignments_ and _bridge regions_.
 _Colinear alignments_ are defined by the colinearity relationship computed
 in `?flagColinearAlignments`.  _Bridge regions_ separate alignments that are
 colinear to each other.  _Isolated alignments_ have no colinear counterparts
-and _breakpoint regions_ are the remaining intervals.  _Colinear regions_ are
-the union of _colinear alignments_ and _bridge regions_.
+and _breakpoint regions_ are the remaining intervals.  _Colinear regions_ 
+(or _chains_) are the union of _colinear alignments_ and _bridge regions_.
 
 As Bioconductor's `gaps()` function returns also the unaligned sequences between
 the start/end of chromosome and the first/last block, we use the `?cleanGaps`
@@ -71,11 +72,72 @@ function that removes them before returning the object.
 ```{r clean_gaps}
 isol <- gb[gb %in% coa]
 coli <- gb[!gb %in% coa]
-bri  <- bridgeRegions(gb)
+bri <- if (length(filterColinearRegions(flagColinearAlignments(gb), rename = FALSE)) == 0) {
+  GBreaks()
+} else {
+  bridgeRegions(gb)
+}
+# Can be reverted once #20 is fixed in the main branch
+# bri  <- bridgeRegions(gb)
 brk  <- cleanGaps(coa)
+brk_q <- cleanGaps(coa$query)
 ```
 
-```{r plot_widths, dev = c('svg', 'png')}
+Inversions
+----------
+
+### Simple inversions
+
+```{r study_inversions}
+# See https://github.com/oist/GenomicBreaks/issues/25
+# Not sure what the minimal length is; let's try 2
+if (length(coa) > 2)
+  coa <- flagInversions(coa)
+sum(coa$inv)
+inv <- filterInversions(coa)
+head(inv, 11)
+```
+
+### Flip the simple inversions and coalesce
+
+```{r study_inversions2}
+# flipped <- flipInversions(coa) |> coalesce_contigs()
+# 
+# coa <- flagInversions(coa)
+# sum(coa$inv)
+# inv <- filterInversions(coa)
+# head(inv, 11)
+```
+
+
+### Double inversions
+
+```{r study_double_inversions}
+#coa <- flagDoubleInversions(coa)
+#sum(coa$Dbl)
+#dbl <- filterDoubleInversions(coa)
+#head(inv, 11)
+```
+
+Translocations
+--------------
+
+Patterns that can be described as translocations in the target genome.
+
+```{r study_translocations}
+# See https://github.com/oist/GenomicBreaks/issues/25
+# Not sure what the minimal length is; let's try 2
+if (length(coa) > 2)
+  coa <- flagTranslocations(coa)
+sum(coa$tra)
+tra <- filterTranslocations(coa)
+head(tra, 11)
+```
+
+Width plots
+-----------
+
+```{r plot_widths, fig.height=12, dev=c('svg', 'png')}
 # Need to wrap in a function to handle empty GRanges objects...
 width2df <- function(what, gr) {
   if (length(gr) == 0) {
@@ -90,74 +152,82 @@ rbind(
   width2df(what = "breakpoint_regions",   gr = brk),
   width2df(what = "colinear_aln", gr = coli),
   width2df(what = "colinear_region", gr = coa),
-  width2df(what = "bridge", gr = bri)
+  width2df(what = "bridge", gr = bri),
+  width2df(what = "translocations", gr = tra),
+  width2df(what = "inversions", gr = inv)
 ) |> ggplot() +
   aes(width) +
   geom_histogram() +
   scale_x_log10() +
-  facet_wrap(~what, ncol = 1)
+  facet_wrap(~what, ncol = 1, scales = "free_y")
 ```
 
-Inversions
-----------
-
-```{r study_inversions}
-coa <- flagInversions(coa)
-sum(coa$inv)
-showInversions(coa) |> head(11)
-if (sum(coa$inv) > 10) {
-  # Histogram of the widths
-  ggplot(data.frame(width = width(filterInversions(coa)))) +
-    aes(width) +
-    geom_histogram() +
-    scale_x_log10()
-}
-```
-
-Translocations
---------------
-
-Patterns that can be described as translocations in the target genome.
-
-```{r study_translocations}
-coa <- flagTranslocations(coa)
-sum(coa$tra)
-showTranslocations(coa) |> head(11)
-
-if (sum(coa$tra) > 10) {
-  # Histogram of the widths
-  ggplot(data.frame(width = width(filterTranslocations(coa)))) +
-    aes(width) +
-    geom_histogram() +
-    scale_x_log10()
-}
-```
 
 
 Calculate numbers and prepare them for export in a YAML file
 ------------------------------------------------------------
 
 ```{r count_features}
-report <- list()
+customSummary <- function(x, pasteToNames=NULL) {
+  s <- summary(x)
+  names(s) <- c("Min", "Q1", "Median", "Mean", "Q3", "Max")
+  s["L50"]     <- weighted.mean(x, as.numeric(x)) # as.num to avoid integer overflow
+  s["Total"]   <- sum(x)
+  s["N"]       <- length(x)
+  s <- as.list(s)
+  names(s) <- paste0(pasteToNames, '_', names(s))
+  s
+}
 
-report[["aligned_length_total"]]  <- sum(gb$aLength)
-report[["aligned_target_total"]]  <- sum(width(gb))
-report[["aligned_query_total"]]   <- sum(width(gb$query))
-report[["aligned_ranges_number"]] <- length(gb)
+summaryWidth <- function(gb, pasteToNames=NULL) {
+  w <- if(length(gb) == 0) {
+      0
+    } else {
+      width(gb)
+    }
+  customSummary(w, pasteToNames)
+}
 
-report[["colinear_target_total"]] <- sum(width(coa))
-report[["colinear_query_total"]]  <- sum(width(coa$query))
-report[["colinear_ranges_number"]] <- length(coa)
+gb$mismatches <- (width(gb) + width(gb$query) - gb$aLength - gb$matches)
 
-report[["percent_similarity"]] <- 1 - sum(gb$matches) / sum(gb$aLength)
-
-report[["number_of_inversions"]]       <- sum(coa$inv)
-report[["number_of_transpositionsl"]]  <- sum(coa$tra)
-
-report[["synteny_index"]]              <- synteny_index(gb)
-report[["correlation_index"]]          <- correlation_index(gb)
-report[["GOC_vicinity_4"]]             <- GOC(gb, vicinity = 4) # Default as of today
-report[["strand_randomisation_index"]] <- strand_randomisation_index(gb)
+report <- list() |>
+  c(customSummary(gb$aLength, "aligned_length")) |>
+  c(customSummary(score(gb),  "aligned_scores")) |>
+  c(customSummary(gb$matches,                         "matches_number"))     |>
+  c(customSummary(gb$mismatches,                      "mismatches_number"))  |>
+  c(customSummary(gb$aLength - width(gb),             "gaps_target"))       |>
+  c(customSummary(gb$aLength - width(gb$query),       "gaps_query"))        |>
+  c(customSummary(100 * gb$matches / gb$aLength,      "percent_identity_") ) |>
+  c(customSummary(100 * gb$matches / width(gb),       "matching_target"))    |>
+  c(customSummary(100 * gb$matches / width(gb$query), "matching_query"))     |>
+  c(percent_similarity_compat = 1 - sum(gb$mismatches) / sum(width(gb))) |>
+  c(customSummary(1 - gb$mismatches / width(gb), "percentSim_compat"))  |> # To reproduce older figures
+  c(summaryWidth(gb,         "aligned_target"))      |>
+  c(summaryWidth(gb$query,   "aligned_query"))       |>
+  c(summaryWidth(coa,        "chain_target"))        |>
+  c(summaryWidth(coa$query,  "chain_query"))         |>
+  c(summaryWidth(coli,       "collinear_target"))    |>
+  c(summaryWidth(coli$query, "collinear_query"))     |>
+  c(summaryWidth(isol,       "isolated_target"))     |>
+  c(summaryWidth(isol$query, "isolated_query"))      |>
+  c(summaryWidth(bri,        "bridge_target"))       |>
+  c(summaryWidth(bri$query,  "bridge_query"))        |>
+  c(summaryWidth(brk,        "break_target"))        |>
+  c(summaryWidth(brk_q,      "break_query"))         |>
+  c(summaryWidth(inv,        "inverted_target"))     |>
+  c(summaryWidth(inv$query,  "inverted_query"))      |>
+  c(summaryWidth(tra,        "translocated_target")) |>
+  c(summaryWidth(tra$query,  "translocated_query"))  |>
+  c(guessed_target_length = sum(guessSeqLengths(gb))) |>
+  c(guessed_query_length =  sum(guessSeqLengths(gb$query))) |>
+  c(index_synteny_target = synteny_index(gb)) |>
+  c(index_synteny_query  = synteny_index(swap(gb))) |>
+  c(index_correlation_target = correlation_index(gb)) |>
+  c(index_correlation_query = correlation_index(swap(gb))) |>
+  c(index_GOCvicinity4_target = GOC(gb, vicinity = 4)) |> # Default as of today.  Does not make much sense on nucleotide sequences?
+  c(index_GOCvicinity4_query = GOC(swap(gb), vicinity = 4)) |> # Default as of today.  Does not make much sense on nucleotide sequences?
+  c(index_strandRand_target = strand_randomisation_index(gb)) |>
+  c(index_strandRand_query = strand_randomisation_index(swap(gb)))
 ```
 
 Export the results to a YAML file.
