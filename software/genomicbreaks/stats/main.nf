@@ -13,7 +13,7 @@ process GENOMICBREAKS_STATS {
 
 //    conda (params.enable_conda ? "YOUR-TOOL-HERE" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
-        container "https://www.dropbox.com/s/m4axeg4p0kyqs3e/GenomicBreaks-0.14.0.sif?dl=1"
+        container "https://www.dropbox.com/s/78ierev2sdtu2nn/GenomicBreaks_0.14.2.sif?dl=1"
     } else {
         error "Only the local Singularity image is supported"
 //        container "quay.io/biocontainers/YOUR-TOOL-HERE"
