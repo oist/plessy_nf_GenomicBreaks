@@ -13,7 +13,7 @@ process GENOMICBREAKS_STATS {
 
 //    conda (params.enable_conda ? "YOUR-TOOL-HERE" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
-        container "https://www.dropbox.com/scl/fi/xr3l0dw3ronjgslx7qh7y/GenomicBreaks_0.14.5.sif?rlkey=mptnecy96z7z066r2cs0s3uqk&dl=1"
+        container "https://uc1474216cd98178c8898ec39b6a.dl.dropboxusercontent.com/cd/0/inline/CM0HZjsBcTA_FLM9fGEs-rmoFHiRkx4XV3s_DfwnzqfWI35uCjPsNDHlpreWQSohpGM0tTg1dvXKGidiTdYol3mQr97ypeoUfl2zHq7m-jNnMuSYDXz0fG2ysvWwWzhts3qZVmG7KaQtI5wDzTVqDz71/file?dl=1"
     } else {
         error "Only the local Singularity image is supported"
 //        container "quay.io/biocontainers/YOUR-TOOL-HERE"
