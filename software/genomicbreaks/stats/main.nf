@@ -19,6 +19,9 @@ process GENOMICBREAKS_STATS {
 //        container "quay.io/biocontainers/YOUR-TOOL-HERE"
     }
 
+    errorStrategy 'retry'
+    maxRetries 2
+
     input:
     tuple val(meta), path(maf)
     path(skel)
