@@ -1,7 +1,7 @@
 ---
 title: "Count features"
 author: "Charles Plessy"
-date: "07/07/2023"
+date: "12/02/2025"
 output: 
   html_document: 
     keep_md: yes
@@ -46,6 +46,10 @@ if (params$alnFile == "/absolute/path/to/your/file") {
   alnFile <- params$alnFile
   matchType <- params$matchType
 }
+
+# GFF 2.1~beta
+  matchType <- "match"
+
 ```
 
 ```{r load_data}
@@ -53,7 +57,7 @@ if (params$alnFile == "/absolute/path/to/your/file") {
 params
 
 # Load the alignment in a GBreaks object
-gb <-load_genomic_breaks(alnFile, type = params$matchType)
+gb <-load_genomic_breaks(alnFile, type = matchType)
 gb_p <- keepLongestPair(gb, drop = TRUE)
 ```
 
@@ -174,22 +178,46 @@ pasteif <- function(x, suffix) {
     names(x) <- paste(names(x), suffix, sep = "_")
   x
 }
+# 
+# makeRreport <- function(gb, coa, wgol, suffix = NULL) {
+#   gb$mismatches <- (width(gb) + width(gb$query) - gb$aLength - gb$matches)
+#   list() |>
+#   c(customSummary(gb$aLength,                            "aligned_length"            , suffix)) |>
+#   c(customSummary(score(gb),                             "aligned_score"             , suffix)) |>
+#   c(customSummary(gb$matches,                            "aligned_matches"           , suffix)) |>
+#   c(customSummary(gb$mismatches,                         "aligned_mismatches"        , suffix)) |>
+#   c(customSummary(gb$aLength - width(gb),                "aligned_gaps_target"       , suffix)) |>
+#   c(customSummary(gb$aLength - width(gb$query),          "aligned_gaps_query"        , suffix)) |>
+#   c(customSummary(100 * gb$matches / gb$aLength,         "matching_aligned"          , suffix)) |>
+#   c(customSummary(100 * gb$matches / width(gb),          "matching_target"           , suffix)) |>
+#   c(customSummary(100 * gb$matches / width(gb$query),    "matching_query"            , suffix)) |>
+#   c(customSummary(100 * gb$mismatches / gb$aLength,      "mismatching_aligned"       , suffix)) |>
+#   c(customSummary(100 * gb$mismatches / width(gb),       "mismatching_target"        , suffix)) |>
+#   c(customSummary(100 * gb$mismatches / width(gb$query), "mismatching_query"         , suffix)) |>
+#   c(customSummary(width(gb),                             "aligned_width_target"      , suffix)) |>
+#   c(customSummary(width(gb$query),                       "aligned_width_query"       , suffix)) |>
+#   c(customSummary(width(coa),                            "chain_width_target"        , suffix)) |>
+#   c(customSummary(width(coa$query),                      "chain_width_query"         , suffix)) |>
+#   c(customSummary(width(wgol$`collinear alignment`),     "collinear_width_target"    , suffix)) |>
+#   c(customSummary(width(wgol$`isolated alignment`),      "isolated_width_target"     , suffix)) |>
+#   c(customSummary(width(wgol$`bridge region`),           "bridge_width_target"       , suffix)) |>
+#   c(customSummary(width(wgol$`breakpoint region`),       "breakpoint_width_target"   , suffix)) |>
+#   c(customSummary(width(coa[coa$flag == "Inv"]),         "inverted_width_target"     , suffix)) |>
+#   c(customSummary(width(coa[coa$flag == "Tra"]),         "translocated_width_target" , suffix)) |>
+#   c(customSummary(guessSeqLengths(gb),                   "guessed_target_length"     , suffix)) |>
+#   c(customSummary(guessSeqLengths(gb$query),             "guessed_query_length"      , suffix)) |>
+#   c(list(index_synteny_target      = synteny_index(gb)                    ) |> pasteif(suffix)) |>
+#   c(list(index_synteny_query       = synteny_index(swap(gb))              ) |> pasteif(suffix)) |>
+#   c(list(index_correlation_target  = correlation_index(gb)                ) |> pasteif(suffix)) |>
+#   c(list(index_correlation_query   = correlation_index(swap(gb))          ) |> pasteif(suffix)) |>
+#   c(list(index_GOCvicinity4_target = GOC(gb, vicinity = 4)                ) |> pasteif(suffix)) |> 
+#   c(list(index_GOCvicinity4_query  = GOC(swap(gb), vicinity = 4)          ) |> pasteif(suffix)) |>
+#   c(list(index_strandRand_target   = strand_randomisation_index(gb)       ) |> pasteif(suffix)) |>
+#   c(list(index_strandRand_query    = strand_randomisation_index(swap(gb)) ) |> pasteif(suffix))
+# }
 
 makeRreport <- function(gb, coa, wgol, suffix = NULL) {
-  gb$mismatches <- (width(gb) + width(gb$query) - gb$aLength - gb$matches)
   list() |>
-  c(customSummary(gb$aLength,                            "aligned_length"            , suffix)) |>
-  c(customSummary(score(gb),                             "aligned_score"             , suffix)) |>
-  c(customSummary(gb$matches,                            "aligned_matches"           , suffix)) |>
-  c(customSummary(gb$mismatches,                         "aligned_mismatches"        , suffix)) |>
-  c(customSummary(gb$aLength - width(gb),                "aligned_gaps_target"       , suffix)) |>
-  c(customSummary(gb$aLength - width(gb$query),          "aligned_gaps_query"        , suffix)) |>
-  c(customSummary(100 * gb$matches / gb$aLength,         "matching_aligned"          , suffix)) |>
-  c(customSummary(100 * gb$matches / width(gb),          "matching_target"           , suffix)) |>
-  c(customSummary(100 * gb$matches / width(gb$query),    "matching_query"            , suffix)) |>
-  c(customSummary(100 * gb$mismatches / gb$aLength,      "mismatching_aligned"       , suffix)) |>
-  c(customSummary(100 * gb$mismatches / width(gb),       "mismatching_target"        , suffix)) |>
-  c(customSummary(100 * gb$mismatches / width(gb$query), "mismatching_query"         , suffix)) |>
   c(customSummary(width(gb),                             "aligned_width_target"      , suffix)) |>
   c(customSummary(width(gb$query),                       "aligned_width_query"       , suffix)) |>
   c(customSummary(width(coa),                            "chain_width_target"        , suffix)) |>
@@ -211,10 +239,17 @@ makeRreport <- function(gb, coa, wgol, suffix = NULL) {
   c(list(index_strandRand_target   = strand_randomisation_index(gb)       ) |> pasteif(suffix)) |>
   c(list(index_strandRand_query    = strand_randomisation_index(swap(gb)) ) |> pasteif(suffix))
 }
+
 report <- c(
   makeRreport(gb,   coa,   wgol),
   makeRreport(gb_p, coa_p, wgol_p, suffix = "bestpair"))
 report[sapply(report, length) == 0] <- NA
+
+alnStats <- read.delim(sub(".gff.gz", ".o2o_aln.tsv", system2("realpath", alnFile, stdout = TRUE)))
+report$TotalAlignmentLength    <- alnStats$TotalAlignmentLength
+report$PercentSimilarity       <- alnStats$PercentSimilarity
+report$PercentSimilarityNogaps <- alnStats$PercentSimilarityNogaps
+
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
