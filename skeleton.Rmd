@@ -58,7 +58,6 @@ params
 
 # Load the alignment in a GBreaks object
 gb <-load_genomic_breaks(alnFile, type = matchType)
-gb_p <- keepLongestPair(gb, drop = TRUE)
 ```
 
 Coalesce contigs
@@ -66,7 +65,6 @@ Coalesce contigs
 
 ```{r coalesce_contigs}
 coa   <- coalesce_contigs(gb)
-coa_p <- coalesce_contigs(gb_p)
 makeOxfordPlots(coa, col = 'strand') + ggtitle(params$alnFile)
 ```
 
@@ -83,8 +81,6 @@ and _breakpoint regions_ are the remaining intervals.
 ```{r clean_gaps}
 wgo    <- wholeGenomeClassification(gb,   coa)
 wgol   <- split(wgo, wgo$type)
-wgo_p  <- wholeGenomeClassification(gb_p, coa_p)
-wgol_p <- split(wgo_p, wgo_p$type)
 ```
 
 Flag all structural variants that we can detect
@@ -93,9 +89,6 @@ Flag all structural variants that we can detect
 ```{r study_inversions}
 coa   <- coa   |> flagColinearAlignments() |> flagInversions() |> flagDoubleInversions() |> flagTranslocations() |> flagAll()
 coa$flag[is.na(coa$flag)] <- "" # for easier subsetting later.
-coa_p <- coa_p |> flagColinearAlignments() |> flagInversions() |> flagDoubleInversions() |> flagTranslocations() |> flagAll()
-coa_p$flag[is.na(coa_p$flag)] <- ""
-
 ```
 
 ### Flip the simple inversions and coalesce
@@ -138,9 +131,6 @@ plotRegionWidths <- function(wgol, coa) {
     facet_wrap(~what, ncol = 1, scales = "free_y")
 }
 plotRegionWidths(wgol, coa) + ggtitle("Whole object")
-if (length(wgo_p > 0) & length(coa_p) > 0) {
-  plotRegionWidths(wgol_p, coa_p) + ggtitle("Longest 2 matching sequences")
-}
 ```
 
 
@@ -242,7 +232,6 @@ makeRreport <- function(gb, coa, wgol, suffix = NULL) {
 
 report <- c(
   makeRreport(gb,   coa,   wgol),
-  makeRreport(gb_p, coa_p, wgol_p, suffix = "bestpair"))
 report[sapply(report, length) == 0] <- NA
 
 alnStats <- read.delim(sub(".gff.gz", ".o2o_aln.tsv", system2("realpath", alnFile, stdout = TRUE)))
