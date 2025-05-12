@@ -232,8 +232,8 @@ makeRreport <- function(gb, coa, wgol, suffix = NULL) {
 
 report <- c(
   makeRreport(gb,   coa,   wgol),
-  report[sapply(report, length) == 0] <- NA
 )
+report[sapply(report, length) == 0] <- NA
 
 alnStats <- read.delim(sub(".gff.gz", ".o2o_aln.tsv", system2("realpath", alnFile, stdout = TRUE)))
 report$TotalAlignmentLength    <- alnStats$TotalAlignmentLength
