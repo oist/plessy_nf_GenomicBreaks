@@ -231,7 +231,7 @@ makeRreport <- function(gb, coa, wgol, suffix = NULL) {
 }
 
 report <- c(
-  makeRreport(gb,   coa,   wgol),
+  makeRreport(gb,   coa,   wgol)
 )
 report[sapply(report, length) == 0] <- NA
 
