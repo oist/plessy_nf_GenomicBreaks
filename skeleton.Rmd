@@ -65,7 +65,7 @@ Coalesce contigs
 
 ```{r coalesce_contigs}
 coa   <- coalesce_contigs(gb)
-makeOxfordPlots(coa, col = 'strand') + ggtitle(params$alnFile)
+if(!length(coa) == 0) makeOxfordPlots(coa, col = 'strand') + ggtitle(params$alnFile)
 ```
 
 ## Classify regions
@@ -130,7 +130,7 @@ plotRegionWidths <- function(wgol, coa) {
     scale_x_log10() +
     facet_wrap(~what, ncol = 1, scales = "free_y")
 }
-plotRegionWidths(wgol, coa) + ggtitle("Whole object")
+if(!length(coa) == 0) plotRegionWidths(wgol, coa) + ggtitle("Whole object")
 ```
 
 
