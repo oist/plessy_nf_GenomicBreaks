@@ -239,6 +239,9 @@ alnStats <- read.delim(sub(".gff.gz", ".o2o_aln.tsv", system2("realpath", alnFil
 report$TotalAlignmentLength    <- alnStats$TotalAlignmentLength
 report$PercentSimilarity       <- alnStats$PercentSimilarity
 report$PercentSimilarityNogaps <- alnStats$PercentSimilarityNogaps
+# Pipeline v.2.2
+report$PercentIdentity         <- alnStats$PercentIdentity
+report$PercentIdentityNoGaps   <- alnStats$PercentIdentityNoGaps
 
 ```
 
