@@ -1,5 +1,9 @@
 # Pairwise Genome Comparison Statistics
 
+The version number is the one of the _GenomicBreaks_ package in the
+`genomicbreaks` modules's Singularity image, plus 1 per changes in the
+`skeleton.Rmd` file.
+
 ## Mandatory parameters
 
  * `--input`: path to a sample sheet in tab-separated format with one header

@@ -236,13 +236,17 @@ report <- c(
 report[sapply(report, length) == 0] <- NA
 
 alnStats <- read.delim(sub(".gff.gz", ".o2o_aln.tsv", system2("realpath", alnFile, stdout = TRUE)))
+trainParams <- readTrainFile(sub(".gff.gz", ".train", system2("realpath", alnFile, stdout = TRUE)))
+
 report$TotalAlignmentLength    <- alnStats$TotalAlignmentLength
 report$PercentSimilarity       <- alnStats$PercentSimilarity
 report$PercentSimilarityNogaps <- alnStats$PercentSimilarityNogaps
 # Pipeline v.2.2
 report$PercentIdentity         <- alnStats$PercentIdentity
 report$PercentIdentityNoGaps   <- alnStats$PercentIdentityNoGaps
-
+report$JC69 <- JC69_distance(trainParams)
+report$K80  <-  K80_distance(trainParams)
+report$T92  <-  T92_distance(trainParams)
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
@@ -277,6 +281,9 @@ report$PercentIdentityNoGaps   <- alnStats$PercentIdentityNoGaps
  - `index_GOCvicinity4_query`: GOC index (vicinity = 4) after flipping _target_ and _query_.
  - `index_strandRand_target`: strand randomisation index.
  - `index_strandRand_query`: strand randomisation index after flipping _target_ and _query_.
+ - `JC69`: Jukes-Cantor 1969 distance computed from base substitution probabilities estimated by `last-train`.
+ - `K80`: Kimura 1980 distance computed from base substitution probabilities estimated by `last-train`.
+ - `T92`: Tamura 1992 distance computed from base substitution probabilities estimated by `last-train`.
 
 Export the results to a YAML file.
 
