@@ -227,6 +227,9 @@ makeRreport <- function(gb, coa, wgol, suffix = NULL) {
   c(list(index_GOCvicinity4_target = GOC(gb, vicinity = 4)                ) |> pasteif(suffix)) |> 
   c(list(index_GOCvicinity4_query  = GOC(swap(gb), vicinity = 4)          ) |> pasteif(suffix)) |>
   c(list(index_strandRand_target   = strand_randomisation_index(gb)       ) |> pasteif(suffix)) |>
+  c(list(index_strandRand_target_2 = strand_randomisation_index(gb, t=2)  ) |> pasteif(suffix)) |>
+  c(list(index_strandRand_target_5 = strand_randomisation_index(gb, t=5)  ) |> pasteif(suffix)) |>
+  c(list(index_strandRand_target_10= strand_randomisation_index(gb, t=10) ) |> pasteif(suffix)) |>
   c(list(index_strandRand_query    = strand_randomisation_index(swap(gb)) ) |> pasteif(suffix))
 }
 
