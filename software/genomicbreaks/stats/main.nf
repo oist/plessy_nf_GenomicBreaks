@@ -14,9 +14,9 @@ process GENOMICBREAKS_STATS {
 //    conda (params.enable_conda ? "YOUR-TOOL-HERE" : null)
     if (workflow.containerEngine == 'singularity' && !params.singularity_pull_docker_container) {
 //                 https://www.dropbox.com/scl/fi/<id>/<filename>?rlkey=<token>&dl=1
-//                 https://www.dropbox.com/scl/fi/5cy9u77tj5rwnllub0a64/GenomicBreaks_0.14.10.sif?rlkey=0kiiz3tdcs36tgobxvw7as0jp&st=3sdcw34p&dl=0
+//                 https://www.dropbox.com/scl/fi/o3svcet3xnullyl3z4f1s/GenomicBreaks_0.16.3.sif?rlkey=saj50y093oydbu74asa9tj02n&st=lpsrrivi&dl=0
 //                 https://dl.dropboxusercontent.com/scl/fi/<id>/<filename>?rlkey=<token>
-        container "https://dl.dropboxusercontent.com/scl/fi/5cy9u77tj5rwnllub0a64/GenomicBreaks_0.14.10.sif?rlkey=0kiiz3tdcs36tgobxvw7as0jp"
+        container "https://dl.dropboxusercontent.com/scl/fi/5cy9u77tj5rwnllub0a64/GenomicBreaks_0.16.3.sif?rlkey=saj50y093oydbu74asa9tj02n"
     } else {
         error "Only the local Singularity image is supported"
 //        container "quay.io/biocontainers/YOUR-TOOL-HERE"

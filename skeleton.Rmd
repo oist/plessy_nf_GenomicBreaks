@@ -217,6 +217,7 @@ makeRreport <- function(gb, coa, wgol, suffix = NULL) {
   c(customSummary(width(wgol$`bridge region`),           "bridge_width_target"       , suffix)) |>
   c(customSummary(width(wgol$`breakpoint region`),       "breakpoint_width_target"   , suffix)) |>
   c(customSummary(width(coa[coa$flag == "Inv"]),         "inverted_width_target"     , suffix)) |>
+  c(customSummary(width(coa[coa$flag == "Dbl"]),         "double_inv_width_target"   , suffix)) |>
   c(customSummary(width(coa[coa$flag == "Tra"]),         "translocated_width_target" , suffix)) |>
   c(customSummary(guessSeqLengths(gb),                   "guessed_target_length"     , suffix)) |>
   c(customSummary(guessSeqLengths(gb$query),             "guessed_query_length"      , suffix)) |>
@@ -244,12 +245,21 @@ trainParams <- readTrainFile(sub(".gff.gz", ".train", system2("realpath", alnFil
 report$TotalAlignmentLength    <- alnStats$TotalAlignmentLength
 report$PercentSimilarity       <- alnStats$PercentSimilarity
 report$PercentSimilarityNogaps <- alnStats$PercentSimilarityNogaps
+
 # Pipeline v.2.2
 report$PercentIdentity         <- alnStats$PercentIdentity
 report$PercentIdentityNoGaps   <- alnStats$PercentIdentityNoGaps
 report$JC69 <- JC69_distance(trainParams)
 report$K80  <-  K80_distance(trainParams)
 report$T92  <-  T92_distance(trainParams)
+
+# Pipeline v.2.3
+report$F81                     <-  F81_distance(trainParams)
+report$TargetSequences         <- alnStats$TargetSequences
+report$TargetLength            <- alnStats$TargetLength
+report$QuerySequences          <- alnStats$QuerySequences
+report$QueryLength             <- alnStats$QueryLength
+report$GBreaksPipelineVersion  <- "0.16.3.1"
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
@@ -286,6 +296,7 @@ report$T92  <-  T92_distance(trainParams)
  - `index_strandRand_query`: strand randomisation index after flipping _target_ and _query_.
  - `JC69`: Jukes-Cantor 1969 distance computed from base substitution probabilities estimated by `last-train`.
  - `K80`: Kimura 1980 distance computed from base substitution probabilities estimated by `last-train`.
+ - `F81`: Felsenstein 1981 distance computed from base substitution probabilities estimated by `last-train`.
  - `T92`: Tamura 1992 distance computed from base substitution probabilities estimated by `last-train`.
 
 Export the results to a YAML file.
