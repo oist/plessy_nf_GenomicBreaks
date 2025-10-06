@@ -253,13 +253,17 @@ report$JC69 <- JC69_distance(trainParams)
 report$K80  <-  K80_distance(trainParams)
 report$T92  <-  T92_distance(trainParams)
 
+# Should not need it, but...
+
+NAifNULL <- \(x) if(is.null(x)) NA else x
+
 # Pipeline v.2.3
-report$F81                     <-  F81_distance(trainParams)
-report$TargetSequences         <- alnStats$TargetSequences
-report$TargetLength            <- alnStats$TargetLength
-report$QuerySequences          <- alnStats$QuerySequences
-report$QueryLength             <- alnStats$QueryLength
-report$GBreaksPipelineVersion  <- "0.16.3.1"
+report$F81                     <- F81_distance(trainParams)
+report$TargetSequences         <- NAifNULL(alnStats$TargetSequences)
+report$TargetLength            <- NAifNULL(alnStats$TargetLength)
+report$QuerySequences          <- NAifNULL(alnStats$QuerySequences)
+report$QueryLength             <- NAifNULL(alnStats$QueryLength)
+report$GBreaksPipelineVersion  <- "0.16.3.2"
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
