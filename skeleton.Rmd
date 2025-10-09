@@ -264,6 +264,9 @@ report$TargetLength            <- NAifNULL(alnStats$TargetLength)
 report$QuerySequences          <- NAifNULL(alnStats$QuerySequences)
 report$QueryLength             <- NAifNULL(alnStats$QueryLength)
 report$GBreaksPipelineVersion  <- "0.16.3.2"
+
+report$P                       <- P_distance(trainParams)
+report$GBreaksPipelineVersion  <- "0.17.0.1"
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
@@ -298,6 +301,7 @@ report$GBreaksPipelineVersion  <- "0.16.3.2"
  - `index_GOCvicinity4_query`: GOC index (vicinity = 4) after flipping _target_ and _query_.
  - `index_strandRand_target`: strand randomisation index.
  - `index_strandRand_query`: strand randomisation index after flipping _target_ and _query_.
+ - `P`: Percent difference  distance computed from base substitution probabilities estimated by `last-train`.
  - `JC69`: Jukes-Cantor 1969 distance computed from base substitution probabilities estimated by `last-train`.
  - `K80`: Kimura 1980 distance computed from base substitution probabilities estimated by `last-train`.
  - `F81`: Felsenstein 1981 distance computed from base substitution probabilities estimated by `last-train`.
