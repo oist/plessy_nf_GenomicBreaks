@@ -239,8 +239,10 @@ report <- c(
 )
 report[sapply(report, length) == 0] <- NA
 
-alnStats <- read.delim(sub(".gff.gz", ".o2o_aln.tsv", system2("realpath", alnFile, stdout = TRUE)))
-trainParams <- readTrainFile(sub(".gff.gz", ".train", system2("realpath", alnFile, stdout = TRUE)))
+alnFilePath <- system2("realpath", alnFile, stdout = TRUE)
+alnStats <-       read.delim(sub(".gff.gz", ".o2o_aln.tsv",        alnFilePath))
+trainParams <- readTrainFile(sub(".gff.gz", ".train",              alnFilePath))
+countMatrix <-    read.delim(sub(".gff.gz", ".o2o_aln.matrix.txt", alnFilePath), sep = '\t', comment.char = '#',  header = TRUE, row.names = 1, check.names = FALSE) |> as.matrix()
 
 report$TotalAlignmentLength    <- alnStats$TotalAlignmentLength
 report$PercentSimilarity       <- alnStats$PercentSimilarity
@@ -249,24 +251,31 @@ report$PercentSimilarityNogaps <- alnStats$PercentSimilarityNogaps
 # Pipeline v.2.2
 report$PercentIdentity         <- alnStats$PercentIdentity
 report$PercentIdentityNoGaps   <- alnStats$PercentIdentityNoGaps
-report$JC69 <- JC69_distance(trainParams)
-report$K80  <-  K80_distance(trainParams)
-report$T92  <-  T92_distance(trainParams)
+report$JC69 <- JC69_distance(countMatrix)
+report$K80  <-  K80_distance(countMatrix)
+report$T92  <-  T92_distance(countMatrix)
 
 # Should not need it, but...
 
 NAifNULL <- \(x) if(is.null(x)) NA else x
 
 # Pipeline v.2.3
-report$F81                     <- F81_distance(trainParams)
+report$F81                     <- F81_distance(countMatrix)
 report$TargetSequences         <- NAifNULL(alnStats$TargetSequences)
 report$TargetLength            <- NAifNULL(alnStats$TargetLength)
 report$QuerySequences          <- NAifNULL(alnStats$QuerySequences)
 report$QueryLength             <- NAifNULL(alnStats$QueryLength)
 report$GBreaksPipelineVersion  <- "0.16.3.2"
 
-report$P                       <- P_distance(trainParams)
+report$P                       <- P_distance(countMatrix)
 report$GBreaksPipelineVersion  <- "0.17.0.1"
+
+report$GCequi                  <- GCequilibrium(countMatrix)
+report$GCpres                  <- GCpressure(countMatrix)
+report$GCprop                  <- GCproportion(countMatrix)
+report$gapProp                 <- gapProportion(countMatrix)
+report$P_error                 <- P_error(countMatrix)
+report$GBreaksPipelineVersion  <- "0.19.0.1"
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
