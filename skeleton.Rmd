@@ -276,6 +276,12 @@ report$GCprop                  <- GCproportion(countMatrix)
 report$gapProp                 <- gapProportion(countMatrix)
 report$P_error                 <- P_error(countMatrix)
 report$GBreaksPipelineVersion  <- "0.19.0.1"
+
+
+report$TN93                    <-TN93_distance(countMatrix)
+report$HKY85                   <-HKY85_distance(countMatrix)
+report$LogDet                  <-logDet_distance(countMatrix)
+report$GBreaksPipelineVersion  <- "0.20.0.1"
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
