@@ -87,7 +87,7 @@ Flag all structural variants that we can detect
 -----------------------------------------------
 
 ```{r study_inversions}
-coa   <- coa   |> flagColinearAlignments() |> flagInversions() |> flagDoubleInversions() |> flagTranslocations() |> flagAll()
+coa   <- coa |> flagAll()
 coa$flag[is.na(coa$flag)] <- "" # for easier subsetting later.
 ```
 
