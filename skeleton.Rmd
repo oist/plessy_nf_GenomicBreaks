@@ -206,6 +206,7 @@ makeRreport <- function(gb, coa, wgol, suffix = NULL) {
   c(customSummary(width(wgol$`breakpoint region`),       "breakpoint_width_target"   , suffix)) |>
   c(customSummary(width(coa[coa$flag == "Inv"]),         "inverted_width_target"     , suffix)) |>
   c(customSummary(width(coa[coa$flag == "Dbl"]),         "double_inv_width_target"   , suffix)) |>
+  c(customSummary(width(coa[coa$flag == "Twi"]),         "twin_inv_width_target"     , suffix)) |>
   c(customSummary(width(coa[coa$flag == "Tra"]),         "translocated_width_target" , suffix)) |>
   c(customSummary(guessSeqLengths(gb),                   "guessed_target_length"     , suffix)) |>
   c(customSummary(guessSeqLengths(gb$query),             "guessed_query_length"      , suffix)) |>
