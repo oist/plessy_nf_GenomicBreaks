@@ -22,7 +22,7 @@ process GENOMICBREAKS_STATS {
 //        container "quay.io/biocontainers/YOUR-TOOL-HERE"
     }
 
-    errorStrategy 'retry'
+    errorStrategy = { task.attempt <= 2 ? 'retry' : 'ignore' }
     maxRetries 2
 
     input:
