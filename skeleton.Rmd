@@ -231,7 +231,13 @@ report[sapply(report, length) == 0] <- NA
 alnFilePath <- system2("realpath", alnFile, stdout = TRUE)
 alnStats <-       read.delim(sub(".gff.gz", ".o2o_aln.tsv",        alnFilePath))
 trainParams <- readTrainFile(sub(".gff.gz", ".train",              alnFilePath))
-countMatrix <-    read.delim(sub(".gff.gz", ".o2o_aln.matrix.txt", alnFilePath), sep = '\t', comment.char = '#',  header = TRUE, row.names = 1, check.names = FALSE) |> as.matrix()
+
+matrixFile <- sub(".gff.gz", ".o2o_aln.matrix.txt", alnFilePath)
+
+countMatrix <- tryCatch({
+    if (!file.exists(matrixFile) || file.info(matrixFile)$size == 0) NULL
+    else as.matrix(read.delim(matrixFile, sep = '\t', comment.char = '#', header = TRUE, row.names = 1, check.names = FALSE))
+}, error = function(e) NULL)
 
 report$TotalAlignmentLength    <- alnStats$TotalAlignmentLength
 report$PercentSimilarity       <- alnStats$PercentSimilarity
@@ -240,36 +246,34 @@ report$PercentSimilarityNogaps <- alnStats$PercentSimilarityNogaps
 # Pipeline v.2.2
 report$PercentIdentity         <- alnStats$PercentIdentity
 report$PercentIdentityNoGaps   <- alnStats$PercentIdentityNoGaps
-report$JC69 <- JC69_distance(countMatrix)
-report$K80  <-  K80_distance(countMatrix)
-report$T92  <-  T92_distance(countMatrix)
 
-# Should not need it, but...
+NAifNULL <- \(x) if (is.null(x)) NA else x
 
-NAifNULL <- \(x) if(is.null(x)) NA else x
+report$JC69    <- NAifNULL(if (is.null(countMatrix)) NULL else JC69_distance(countMatrix))
+report$K80     <- NAifNULL(if (is.null(countMatrix)) NULL else K80_distance(countMatrix))
+report$T92     <- NAifNULL(if (is.null(countMatrix)) NULL else T92_distance(countMatrix))
 
 # Pipeline v.2.3
-report$F81                     <- F81_distance(countMatrix)
+report$F81                     <- NAifNULL(if (is.null(countMatrix)) NULL else F81_distance(countMatrix))
 report$TargetSequences         <- NAifNULL(alnStats$TargetSequences)
 report$TargetLength            <- NAifNULL(alnStats$TargetLength)
 report$QuerySequences          <- NAifNULL(alnStats$QuerySequences)
 report$QueryLength             <- NAifNULL(alnStats$QueryLength)
 report$GBreaksPipelineVersion  <- "0.16.3.2"
 
-report$P                       <- P_distance(countMatrix)
+report$P                       <- NAifNULL(if (is.null(countMatrix)) NULL else P_distance(countMatrix))
 report$GBreaksPipelineVersion  <- "0.17.0.1"
 
-report$GCequi                  <- GCequilibrium(countMatrix)
-report$GCpres                  <- GCpressure(countMatrix)
-report$GCprop                  <- GCproportion(countMatrix)
-report$gapProp                 <- gapProportion(countMatrix)
-report$P_error                 <- P_error(countMatrix)
+report$GCequi                  <- NAifNULL(if (is.null(countMatrix)) NULL else GCequilibrium(countMatrix))
+report$GCpres                  <- NAifNULL(if (is.null(countMatrix)) NULL else GCpressure(countMatrix))
+report$GCprop                  <- NAifNULL(if (is.null(countMatrix)) NULL else GCproportion(countMatrix))
+report$gapProp                 <- NAifNULL(if (is.null(countMatrix)) NULL else gapProportion(countMatrix))
+report$P_error                 <- NAifNULL(if (is.null(countMatrix)) NULL else P_error(countMatrix))
 report$GBreaksPipelineVersion  <- "0.19.0.1"
 
-
-report$TN93                    <-TN93_distance(countMatrix)
-report$HKY85                   <-HKY85_distance(countMatrix)
-report$LogDet                  <-logDet_distance(countMatrix)
+report$TN93                    <- NAifNULL(if (is.null(countMatrix)) NULL else TN93_distance(countMatrix))
+report$HKY85                   <- NAifNULL(if (is.null(countMatrix)) NULL else HKY85_distance(countMatrix))
+report$LogDet                  <- NAifNULL(if (is.null(countMatrix)) NULL else logDet_distance(countMatrix))
 report$GBreaksPipelineVersion  <- "0.20.0.1"
 ```
 
