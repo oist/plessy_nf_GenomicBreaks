@@ -31,6 +31,10 @@ contig assembly.
 
     nextflow run oist/plessy_nf_GenomicBreaks -r main -profile oist --input https://github.com/oist/plessy_nf_GenomicBreaks/raw/main/input.tsv
 
+## Test locally
+
+    nextflow run . -profile oist,test # don't forget -w if the compute nodes can not write to the current directory.
+
 ## Tip
 
 Cache the singularity image to avoid multiple downloads, using the

@@ -1,0 +1,22 @@
+# format: matrix
+# scope: file
+# alphabet: A,C,G,T,N,-
+# rows: target
+# cols: query
+# source: <stdin>
+# blocks: 2
+# columns_analyzed: 29590
+# non_acgt_letters_as: N
+# case_insensitive: true
+# P_acgt: 0.000101386
+# F81_acgt: 0.000101393
+# JC69_acgt: 0.000101392
+# K80_acgt: 0.000101396
+# T92_acgt: 0.000101397
+	A	C	G	T	N	-
+A	9464	0	1	0	0	0
+C	0	5579	0	1	0	0
+G	0	0	5659	0	0	0
+T	0	1	0	8885	0	0
+N	0	0	0	0	0	0
+-	0	0	0	0	0	0
