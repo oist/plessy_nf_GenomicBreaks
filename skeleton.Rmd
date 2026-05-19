@@ -275,6 +275,9 @@ report$TN93                    <- NAifNULL(if (is.null(countMatrix)) NULL else T
 report$HKY85                   <- NAifNULL(if (is.null(countMatrix)) NULL else HKY85_distance(countMatrix))
 report$LogDet                  <- NAifNULL(if (is.null(countMatrix)) NULL else logDet_distance(countMatrix))
 report$GBreaksPipelineVersion  <- "0.20.0.1"
+
+report$K80_gap_distance        <- NAifNULL(if (is.null(countMatrix)) NULL else K80_gap_distance(countMatrix))
+report$GBreaksPipelineVersion  <- "0.22.0.1"
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
@@ -314,6 +317,7 @@ report$GBreaksPipelineVersion  <- "0.20.0.1"
  - `K80`: Kimura 1980 distance computed from base substitution probabilities estimated by `last-train`.
  - `F81`: Felsenstein 1981 distance computed from base substitution probabilities estimated by `last-train`.
  - `T92`: Tamura 1992 distance computed from base substitution probabilities estimated by `last-train`.
+ - `K80_gap_distance`: Nishimaki and Sato's K2P + Gap distance computed from base substitution probabilities estimated by `last-train`.
 
 Export the results to a YAML file.
 
