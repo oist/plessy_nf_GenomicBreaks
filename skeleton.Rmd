@@ -229,9 +229,9 @@ report <- c(
 report[sapply(report, length) == 0] <- NA
 
 alnFilePath <- system2("realpath", alnFile, stdout = TRUE)
-alnStats    <-    read.delim(sub(".blasttabplus.gz", ".o2o_aln.tsv",        alnFilePath))
+alnStats    <-    read.delim(sub(".blasttabplus.gz", ".o2o.tsv",        alnFilePath))
 trainParams <- readTrainFile(sub(".blasttabplus.gz", ".train",              alnFilePath))
-matrixFile  <-               sub(".blasttabplus.gz", ".o2o_aln.matrix.txt", alnFilePath)
+matrixFile  <-               sub(".blasttabplus.gz", ".o2o.matrix.txt", alnFilePath)
 
 countMatrix <- tryCatch({
     if (!file.exists(matrixFile) || file.info(matrixFile)$size == 0) NULL
