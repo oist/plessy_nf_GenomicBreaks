@@ -258,25 +258,20 @@ report$TargetSequences         <- NAifNULL(alnStats$TargetSequences)
 report$TargetLength            <- NAifNULL(alnStats$TargetLength)
 report$QuerySequences          <- NAifNULL(alnStats$QuerySequences)
 report$QueryLength             <- NAifNULL(alnStats$QueryLength)
-report$GBreaksPipelineVersion  <- "0.16.3.2"
 
 report$P                       <- NAifNULL(if (is.null(countMatrix)) NULL else P_distance(countMatrix))
-report$GBreaksPipelineVersion  <- "0.17.0.1"
 
 report$GCequi                  <- NAifNULL(if (is.null(countMatrix)) NULL else GCequilibrium(countMatrix))
 report$GCpres                  <- NAifNULL(if (is.null(countMatrix)) NULL else GCpressure(countMatrix))
 report$GCprop                  <- NAifNULL(if (is.null(countMatrix)) NULL else GCproportion(countMatrix))
 report$gapProp                 <- NAifNULL(if (is.null(countMatrix)) NULL else gapProportion(countMatrix))
 report$P_error                 <- NAifNULL(if (is.null(countMatrix)) NULL else P_error(countMatrix))
-report$GBreaksPipelineVersion  <- "0.19.0.1"
 
 report$TN93                    <- NAifNULL(if (is.null(countMatrix)) NULL else TN93_distance(countMatrix))
 report$HKY85                   <- NAifNULL(if (is.null(countMatrix)) NULL else HKY85_distance(countMatrix))
 report$LogDet                  <- NAifNULL(if (is.null(countMatrix)) NULL else logDet_distance(countMatrix))
-report$GBreaksPipelineVersion  <- "0.20.0.1"
 
 report$K80_gap_distance        <- NAifNULL(if (is.null(countMatrix)) NULL else K80_gap_distance(countMatrix))
-report$GBreaksPipelineVersion  <- "0.22.0.1"
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
