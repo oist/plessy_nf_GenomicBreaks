@@ -60,6 +60,24 @@ params
 gb <-load_genomic_breaks(alnFile, type = matchType)
 ```
 
+Guard against genomes that contain more than a million contigs
+
+```{r}
+if (length(seqlevels(gb)) > 250 || length(seqlevels(gb)) > 250) {
+  length(gb)
+  gb <- gb[seqnames(gb) %in% names(head(sort(sum(split(width(gb), seqnames(gb))), decr=T), 250))]
+  length(gb)
+  gb <- gb[seqnames(gb$query) %in% names(head(sort(sum(split(width(gb$query), seqnames(gb$query))), decr=T), 250))]
+  length(gb)
+  seqinfo(gb)
+  seqlevels(gb) <- seqlevelsInUse(gb)
+  seqinfo(gb)
+  seqinfo(gb$query)
+  seqlevels(gb$query) <- seqlevelsInUse(gb$query)
+  seqinfo(gb$query)
+}
+```
+
 Coalesce contigs
 ----------------
 
