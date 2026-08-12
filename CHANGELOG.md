@@ -3,6 +3,10 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.23.0.5](https://github.com/oist/plessy_nf_GenomicBreaks/releases/tag/0.23.0.5) "Isogashisugi" - [August 12th 2026]
+
+- Fix the code that keeps only the longest 250 sequences.
+
 ## [v0.23.0.4](https://github.com/oist/plessy_nf_GenomicBreaks/releases/tag/0.23.0.4) "Hidokunai?" - [August 11th 2026]
 
 - Keep only the longest 250 sequences, because some genomes that I use in a benchmark and that did not go through the stl_preprocess pipeline have more than one million contigs.

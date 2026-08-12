@@ -63,7 +63,7 @@ gb <-load_genomic_breaks(alnFile, type = matchType)
 Guard against genomes that contain more than a million contigs
 
 ```{r}
-if (length(seqlevels(gb)) > 250 || length(seqlevels(gb)) > 250) {
+if (length(seqlevels(gb)) > 250 || length(seqlevels(gb$query)) > 250) {
   length(gb)
   gb <- gb[seqnames(gb) %in% names(head(sort(sum(split(width(gb), seqnames(gb))), decr=T), 250))]
   length(gb)
