@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 
-include { GENOMICBREAKS_STATS } from './software/genomicbreaks/stats/main.nf' addParams( options: [:] )
+include { GENOMICBREAKS_STATS } from './modules/local/genomicbreaks/main.nf'
 
 workflow {
 
