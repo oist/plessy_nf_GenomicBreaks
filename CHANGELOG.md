@@ -3,6 +3,11 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [TBD](https://github.com/oist/plessy_nf_GenomicBreaks/releases/tag/TBD) "TBD" - [TBD]
+
+- Compatibiltiy with 2026 Nextflow versions.
+- Fix documentation on how to run tests.
+
 ## [v0.23.0.5](https://github.com/oist/plessy_nf_GenomicBreaks/releases/tag/0.23.0.5) "Isogashisugi" - [August 12th 2026]
 
 - Fix the code that keeps only the longest 250 sequences.
