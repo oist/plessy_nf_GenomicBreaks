@@ -3,8 +3,9 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [TBD](https://github.com/oist/plessy_nf_GenomicBreaks/releases/tag/TBD) "TBD" - [TBD]
+## [v0.24.0.1](https://github.com/oist/plessy_nf_GenomicBreaks/releases/tag/0.24.0.1) "Pause café" - [September 2nd 2026]
 
+- GenomicBreaks [0.24.0](https://github.com/oist/GenomicBreaks/releases/tag/0.24.0).
 - Compatibiltiy with 2026 Nextflow versions.
 - Fix documentation on how to run tests.
 

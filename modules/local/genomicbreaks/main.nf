@@ -4,7 +4,7 @@ process GENOMICBREAKS_STATS {
 
     // conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine in ['singularity', 'apptainer'] && !task.ext.singularity_pull_docker_container ?
-        'https://github.com/oist/GenomicBreaks/releases/download/0.23.0/GenomicBreaks_0.23.0.sif':
+        'https://github.com/oist/GenomicBreaks/releases/download/0.24.0/GenomicBreaks_0.24.0.sif':
         'quay.io/biocontainers/YOUR-TOOL-HERE' }"
 
     input:
