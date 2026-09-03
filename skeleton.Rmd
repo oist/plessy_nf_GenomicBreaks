@@ -246,12 +246,12 @@ report <- c(
 )
 report[sapply(report, length) == 0] <- NA
 
-alnFilePath <- system2("realpath", alnFile, stdout = TRUE)
-alnStats    <-    read.delim(sub(".blasttabplus.gz", ".o2o.tsv",        alnFilePath))
-trainParams <- readTrainFile(sub(".blasttabplus.gz", ".train",              alnFilePath))
-matrixFile  <-               sub(".blasttabplus.gz", ".o2o.matrix.txt", alnFilePath)
+alnFilePath  <- system2("realpath", alnFile, stdout = TRUE)
+alnStats     <-    read.delim(sub(".blasttabplus.gz", ".o2o.tsv",        alnFilePath))
+trainParams  <- readTrainFile(sub(".blasttabplus.gz", ".train",              alnFilePath))
+matrixFile   <-               sub(".blasttabplus.gz", ".o2o.matrix.txt", alnFilePath)
 
-countMatrix <- tryCatch({
+countMatrix  <- tryCatch({
     if (!file.exists(matrixFile) || file.info(matrixFile)$size == 0) NULL
     else as.matrix(read.delim(matrixFile, sep = '\t', comment.char = '#', header = TRUE, row.names = 1, check.names = FALSE))
 }, error = function(e) NULL)
@@ -290,6 +290,54 @@ report$HKY85                   <- NAifNULL(if (is.null(countMatrix)) NULL else H
 report$LogDet                  <- NAifNULL(if (is.null(countMatrix)) NULL else logDet_distance(countMatrix))
 
 report$K80_gap_distance        <- NAifNULL(if (is.null(countMatrix)) NULL else K80_gap_distance(countMatrix))
+
+# Pipeline v.2.4
+report$JC69_allseq             <- NAifNULL(if (is.null(countMatrix)) NULL else JC69_distance_allseq(gb, countMatrix, adjust_p=TRUE))
+
+# Mapping between reference and query chromosomes, ideally a 1:1 mapping, although this is not guaranteed.
+chrMapping <- matchPairs(gb) |> coalesce_contigs()
+chrWeights <- guessSeqLengths(chrMapping)
+chrWeights <- chrWeights / sum(chrWeights)
+
+rearrangementIndices <- function(gb, min_block_size_perc, chrom_sep="---") {
+  percentile_value <- quantile(width(gb), probs=min_block_size_perc/100)
+  gb_filtered      <- gb[width(gb) >= percentile_value]   # Discard small blocks.
+  exp_inv          <- inversionEstimate_BD(gb_filtered, chrom_sep=chrom_sep)  # Computes inversion estimates.
+  summaries        <- list(
+    N_tot             = sum(sapply(exp_inv,function(chr) chr$N)),                          # Total number of aligned blocks across all chromosomes.
+    nbBreakpoints_tot = sum(sapply(exp_inv,function(chr) chr$nbBreakpoints)),              # Total number of breakpoints across all chromosomes.
+    inv_avg           = mean(sapply(exp_inv,function(chr) chr$expinv_BD$k_avg / chr$N)),   # Average of the expected number of inversions normalized by the number of blocks; values may exceed 1 in highly rearranged cases.
+    inv_avgw          = sum(sapply(seq_along(exp_inv),function(chrIdx) {                   # Weighted average of the expected number of inversions normalized by the number of blocks. The weight is based on the chromosome size.
+                                               chr <- exp_inv[[chrIdx]]
+                                               chrRefName <- strsplit(names(exp_inv)[chrIdx], chrom_sep, fixed=TRUE)[[1]][1]
+                                               chrWeight  <- chrWeights[[chrRefName]]
+                                               chrWeight*(chr$expinv_BD$k_avg / chr$N)})),
+    inv_min           = min(sapply(exp_inv,function(chr) chr$expinv_BD$k_avg / chr$N)),    # Minimum expected number of inversions found in chromosomes.
+    inv_max           = max(sapply(exp_inv,function(chr) chr$expinv_BD$k_avg / chr$N)),    # Maximum expected number of inversions found in chromosomes.
+    inv_lb_avg        = mean(sapply(exp_inv,function(chr) chr$expinv_BD$k_beg / chr$N)),   # Average lower limit for the inversion estimate, normalized by the number of blocks.
+    inv_ub_avg        = mean(sapply(exp_inv,function(chr) chr$expinv_BD$k_end / chr$N))    # Average upper limit for the inversion estimate, normalized by the number of blocks.
+  )
+  return(summaries)
+}
+
+# Different thresholds for the minimum aligned block size; blocks smaller than the specified threshold are excluded from the analysis.
+minBlockSizePercentiles <- c(0, 10, 25, 50)
+# Save inversion estimates for each threshold value.
+for(minBlockSizePercentile in minBlockSizePercentiles){
+  inv_res <- rearrangementIndices(chrMapping, minBlockSizePercentile)
+  print(paste("W_Avg: ", inv_res$inv_avgw, "Avg: ", inv_res$inv_avg, "; Med: ", inv_res$inv_med, "; Min: ", inv_res$inv_min, "; Max: ", inv_res$inv_max))
+  suffix  <- paste0("perc",minBlockSizePercentile)
+  report[[paste0("nbAlignedBlocks_", suffix)]]             <- inv_res$N_tot
+  report[[paste0("nbBreakpoints_", suffix)]] <- inv_res$nbBreakpoints_tot
+  report[[paste0("expNbInv_chrAvg_",         suffix)]] <- inv_res$inv_avg
+  report[[paste0("expNbInv_chrWeightedAvg_", suffix)]] <- inv_res$inv_avgw
+  report[[paste0("expNbInv_chrMin_",         suffix)]] <- inv_res$inv_min
+  report[[paste0("expNbInv_chrMax_",         suffix)]] <- inv_res$inv_max
+  report[[paste0("expNbInv_chrAvgLB_",       suffix)]] <- inv_res$inv_lb_avg
+  report[[paste0("expNbInv_chrAvgUB_",       suffix)]] <- inv_res$inv_ub_avg
+}
+
+
 ```
 
  - `aligned_length`: length of the alignments (including gaps on each genome).
@@ -330,6 +378,14 @@ report$K80_gap_distance        <- NAifNULL(if (is.null(countMatrix)) NULL else K
  - `F81`: Felsenstein 1981 distance computed from base substitution probabilities estimated by `last-train`.
  - `T92`: Tamura 1992 distance computed from base substitution probabilities estimated by `last-train`.
  - `K80_gap_distance`: Nishimaki and Sato's K2P + Gap distance computed from base substitution probabilities estimated by `last-train`.
+ - `nbAlignedBlocks_XX`: Total number of aligned blocks across all chromosomes. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
+ - `nbBreakpoints_XX`: Total number of breakpoints across all chromosomes. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
+ - `expNbInv_chrAvg_XX` : Average of the expected number of inversions normalized by the number of blocks; values may exceed 1 in highly rearranged cases. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
+ - `expNbInv_chrWeightedAvg_XX`: Weighted average of the expected number of inversions normalized by the number of blocks. Weights are based on chromosome size. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
+ - `expNbInv_chrMin_XX` : Minimum expected number of inversions found in chromosomes, normalized by the number of blocks. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
+ - `expNbInv_chrMax_XX` : Maximum expected number of inversions found in chromosomes, normalized by the number of blocks. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
+ - `expNbInv_chrAvgLB_XX`: Average lower limit for the inversion estimate, normalized by the number of blocks. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
+ - `expNbInv_chrAvgUB_XX`: Average upper limit for the inversion estimate, normalized by the number of blocks. XX specifies the percentile of the minimum aligned block size considered in the analysis; smaller blocks are excluded.
 
 Export the results to a YAML file.
 
