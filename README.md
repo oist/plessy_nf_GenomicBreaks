@@ -12,6 +12,16 @@ The version number is the one of the _GenomicBreaks_ package in the
 ## Optional parameters
 
  * `--skel`: path or URL to a "skeletton" Rmarkdown file.
+ * `--trace_report_suffix`: suffix of the files in `pipeline_info/` (default:
+   launch time, `yyyy-MM-dd_HH-mm-ss`).
+
+## Execution reports
+
+As in nf-core pipelines, each run writes in `<outdir>/pipeline_info/` an
+execution report, a timeline, a trace, a DAG and the parameters of the run,
+all suffixed with `--trace_report_suffix`, so that resumed or repeated runs
+add files instead of overwriting them.  The trace has Nextflow's default
+fields first, followed by requested resources, attempt, I/O counters and CPU model.
 
 ## Run
 
