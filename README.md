@@ -35,11 +35,26 @@ is on the `/flash` file system) using the `-w` option.
  
 ## Test
 
-To test the pipeline, just run it with the input file from GitHub.  This will
-download a small alignment file between a SARS-CoV-2 genome and a SARS-CoV-2
-contig assembly.
+The `test` profile runs the pipeline on the small alignment between a
+SARS-CoV-2 genome and a SARS-CoV-2 contig assembly in `test_data/`, from any
+launch directory.
 
     nextflow run oist/plessy_nf_GenomicBreaks -r main -profile oist,test
+
+## nf-test
+
+As in the nf-core template, `tests/default.nf.test` runs the `test` profile
+and `modules/local/genomicbreaks/tests/main.nf.test` runs the process alone,
+each in real and in `-stub` mode, and compares the outputs with the snapshots
+in the `.snap` files.  The rendered HTML report is checked by name only; the
+YAML statistics are checked by content.  The real mode needs the Singularity
+image, for instance with the `oist` profile:
+
+    nf-test test --profile +oist                    # all tests
+    nf-test test tests/default.nf.test --profile +oist
+    nf-test test --profile +oist --update-snapshot  # after an intended change of the outputs
+
+The stub tests need no container.
 
 ## Test locally
 
