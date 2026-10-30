@@ -3,6 +3,15 @@
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+- Execution reports as in nf-core pipelines: report, timeline, trace, DAG and
+  parameters in `pipeline_info/`, suffixed with the launch time or with the new
+  `--trace_report_suffix` parameter.  `report.html` and `timeline.html` are no
+  longer written at the root of the output directory.
+- The trace records requested resources, attempt, I/O counters and CPU model in
+  addition to Nextflow's default fields.
+
 ## [v0.24.0.1](https://github.com/oist/plessy_nf_GenomicBreaks/releases/tag/0.24.0.1) "Pause café" - [September 2nd 2026]
 
 - GenomicBreaks [0.24.0](https://github.com/oist/GenomicBreaks/releases/tag/0.24.0).
