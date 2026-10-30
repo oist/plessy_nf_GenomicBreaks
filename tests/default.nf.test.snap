@@ -1,4 +1,23 @@
 {
+    "-profile test": {
+        "content": [
+            1,
+            [
+                "genomicbreaks",
+                "genomicbreaks/test.html",
+                "genomicbreaks/test.yaml",
+                "pipeline_info"
+            ],
+            [
+                "test.yaml:md5,382da6614b375227ccad239a1f2b8eea"
+            ]
+        ],
+        "timestamp": "2026-10-30T16:25:27.344197358",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.7"
+        }
+    },
     "-profile test -stub": {
         "content": [
             1,
